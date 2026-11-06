@@ -2,29 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manhattan Tract Density</title>
-  <meta name="description" content="Manhattan&#x27;s census tracts drawn in 3D by density in 2010 and 2020, updating Angel and Lamson-Hall&#x27;s 1910/2010 plate.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Manhattan Tract Density 2010–2020</title>
+  <meta name="description" content="Manhattan's census tracts drawn in 3D by density in 2010 and 2020, updating Angel and Lamson-Hall's 1910/2010 plate.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://corey.sciu.to/manhattan-density/">
-  <meta property="og:title" content="Manhattan Tract Density">
-  <meta property="og:description" content="Manhattan&#x27;s census tracts drawn in 3D by density in 2010 and 2020, updating Angel and Lamson-Hall&#x27;s 1910/2010 plate.">
+  <meta property="og:title" content="Manhattan Tract Density 2010–2020">
+  <meta property="og:description" content="Manhattan's census tracts drawn in 3D by density in 2010 and 2020, updating Angel and Lamson-Hall's 1910/2010 plate.">
   <meta property="og:image" content="https://corey.sciu.to/manhattan-density/preview.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <style>
-    body { margin: 0; font: 16px/1.5 system-ui, sans-serif; display: grid; grid-template-rows: 1fr auto; min-height: 100vh; }
-    main { display: grid; place-content: center; text-align: center; padding: 16px; }
-    footer { padding: 12px 16px; font-size: 12px; color: #555; text-align: center; }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Base reset */
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+/* Layout: one wide oblique canvas like the original plate, a year switch above it, a strip of findings below. */
+:root{
+  --bg:#fbfaf7; --fg:#1d1a17; --muted:#6a645d; --rule:#e2ddd5; --chip:#efebe4;
+  --b0:#e9b34f; --b1:#ea7a3c; --b2:#d93a2b; --b3:#a43aa3; --b4:#5e1414;
+  --lossS:#2f7d8c; --lossW:#9ccbd3; --flat:#e4ded4; --gainW:#f2b98a; --gainS:#d2561f; --gainX:#8e2a0e;
+  --ground:#ece7de;
+  --display:"Libre Franklin","Franklin Gothic Medium","Arial Narrow",Arial,sans-serif;
+  --body:"Source Serif 4",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#161412; --fg:#ece7e0; --muted:#a39b91; --rule:#2f2b27; --chip:#24211e;
+  --flat:#4a4540; --ground:#24211e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#161412; --fg:#ece7e0; --muted:#a39b91; --rule:#2f2b27; --chip:#24211e;
+  --flat:#4a4540; --ground:#24211e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px;padding-block:28px 44px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(24px,4vw,36px);line-height:1.08;margin:0 0 6px;letter-spacing:-.01em;text-wrap:balance}
+.dek{margin:0;color:var(--muted);max-width:66ch}
+.dek b{color:var(--fg);font-weight:600}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin:20px 0 6px}
+.seg{display:inline-flex;background:var(--chip);border-radius:999px;padding:3px}
+.seg button{font-family:var(--display);font-weight:700;font-size:14px;border:0;background:transparent;color:var(--muted);padding:7px 16px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.seg button:focus-visible{outline:2px solid var(--b2);outline-offset:2px}
+.hint{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.stage{position:relative;margin:0 -8px}
+canvas{display:block;width:100%;touch-action:pan-y;cursor:grab}
+canvas.drag{cursor:grabbing}
+.yr{position:absolute;left:12px;top:8px;font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,54px);line-height:1;pointer-events:none}
+.legend{position:absolute;left:12px;bottom:10px;font-family:var(--display);font-size:13px;line-height:1.35;pointer-events:none}
+.legend .t{font-weight:500;margin-bottom:4px;color:var(--fg)}
+.legend div.r{display:flex;align-items:center;gap:7px;font-variant-numeric:tabular-nums}
+.legend i{width:13px;height:13px;border:1px solid rgba(0,0,0,.25);display:inline-block}
+@media (max-width:640px){.legend{position:static;margin:4px 12px 0}.yr{font-size:30px}}
+.tip{position:absolute;pointer-events:none;background:var(--bg);border:1px solid var(--rule);box-shadow:0 4px 18px rgba(0,0,0,.12);padding:8px 10px;border-radius:6px;font-size:13px;min-width:180px;max-width:240px}
+.tip b{font-family:var(--display);font-weight:700;display:block}
+.tip span{display:block;color:var(--muted);font-size:12px;margin-bottom:4px}
+.tip table{font-family:var(--mono);font-size:12px;border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+.tip td{padding:1px 0}.tip td+td{text-align:right}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0;margin-top:22px;border-top:2px solid var(--fg)}
+.fact{padding:14px 18px 6px 0;min-width:0}
+.fact .n{font-family:var(--display);font-weight:800;font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums}
+.fact p{margin:4px 0 0;font-size:14px;color:var(--muted)}
+.notes{margin-top:22px;display:grid;gap:8px;max-width:72ch;font-size:13.5px;color:var(--muted)}
+.notes p{margin:0}.notes b{color:var(--fg);font-weight:600}
+.dek a,.notes a{color:inherit;text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+.notes cite{font-style:italic}
+.foot{margin-top:22px;padding-top:10px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head>
 <body>
-  <main id="app">
-    <h1>Manhattan Tract Density</h1>
-    <p>Manhattan&#x27;s census tracts drawn in 3D by density in 2010 and 2020, updating Angel and Lamson-Hall&#x27;s 1910/2010 plate.</p>
-  </main>
-  <footer>Questions: corey.sciuto+manhattan-density@gmail.com · <span class="version" title="Version">dev</span></footer>
-  <script type="module" src="main.js"></script>
+<main class="wrap">
+  <h1>Census tract densities in Manhattan, 2010 and 2020</h1>
+  <p class="dek">An update to Shlomo Angel and Patrick Lamson-Hall's <a href="https://marroninstitute.nyu.edu/uploads/content/Manhattan_Densities_Low_Res,_1_January_2015.pdf">1910/2010 density plate</a>, using its density bands in persons per hectare. Flip between years and the island barely twitches. <b>270 of 310 tracts</b> stay in the same band. The towers of 1910 don't come back anywhere.</p>
+  <div class="bar">
+    <div class="seg" role="group" aria-label="View">
+      <button id="v10" aria-pressed="false">2010</button>
+      <button id="v20" aria-pressed="true">2020</button>
+      <button id="vch" aria-pressed="false">Change</button>
+    </div>
+    <span class="hint">Drag to turn the island · hover a tract for numbers</span>
+  </div>
+  <div class="stage" id="stage">
+    <canvas id="cv" aria-label="Oblique 3D map of Manhattan census tracts, extruded by residential density"></canvas>
+    <div class="yr" id="yr">2020</div>
+    <div class="legend" id="legend"></div>
+    <div class="tip" id="tip" hidden></div>
+  </div>
+  <div class="facts" id="facts"></div>
+  <div class="notes">
+    <p><b>Data.</b> <a href="https://www.nyc.gov/site/planning/planning-level/nyc-population/2020-census.page">NYC Dept. of City Planning</a>, 2010–2020 Census core geographies workbook (from U.S. Census Bureau 2010 and 2020 redistricting and DHC files), total population (<code>Pop1</code>) by 2020 tract, divided by the workbook's land acres (converted to hectares). DCP publishes 2010 counts already re-tabulated to 2020 tracts, so both years share the same 310 shapes. Angel and Lamson-Hall divide by the area of built city blocks, without streets or parks, so their figures run about 30% higher than these.</p>
+    <p><b>Shapes.</b> DCP <a href="https://data.cityofnewyork.us/City-Government/2020-Census-Tracts/63ge-mke6">2020 census tracts</a> (Bytes of the Big Apple, clipped to shoreline), simplified for drawing. Heights use one linear scale in both years, sized so the original chart's 2,400 p/ha ceiling would still fit.</p>
+    <p><b>Change view.</b> Height is 2020 density. Color is the change in persons per hectare from 2010.</p>
+    <p><b>After.</b> Visual approach, density bands and 1910 figures from Shlomo Angel and Patrick Lamson-Hall, <cite>The Rise and Fall of Manhattan's Densities, 1800–2010</cite>, Marron Institute of Urban Management Working Paper 18, New York University, 2014 (<a href="https://marroninstitute.nyu.edu/uploads/content/Manhattan_Densities_Low_Res,_1_January_2015.pdf">PDF</a>). Their maps draw on census data from the National Historical Geographic Information System. This page is an independent reconstruction for 2010–2020 and isn't affiliated with the authors or the Marron Institute.</p>
+  </div>
+  <footer class="foot">Questions: corey.sciuto+manhattan@gmail.com · <span class="version" title="Version">dev</span></footer>
+</main>
+
+<script src="tracts.js"></script>
+<script src="density.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

@@ -16,3 +16,9 @@ tests pass.
 - `READY` in `e2e/smoke.spec.js` should be an element that only appears once the app has rendered.
 - The repo's description, homepage URL and `corey-app` topic list it on https://corey.sciu.to/projects/. Keep
   the description to one plain sentence.
+- `tracts.js` is the data (NYC City Planning 2010–2020 workbook on 2020 tracts; shapes simplified). `density.js` holds
+  the bands and the findings, pure and unit-tested; `app.js` draws the canvas.
+- `tests/density.test.js` pins the data to the Census totals (1,585,873 and 1,694,251), checks it against Angel &
+  Lamson-Hall's 2010 figures where their built-block definition allows, and checks the page's written claims
+  ("270 of 310") and the original findings. If the data changes, update the claims and these tests together.
+- The page is an editorial explainer: the dek, findings and notes are prose on purpose.

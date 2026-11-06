@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 const AxeBuilder = require('@axe-core/playwright').default;
 
 // Every page, checked with axe. Add new pages here: [name, path, selector that appears once it has rendered].
-const PAGES = [['App', '/', '#app']];
+const PAGES = [['Manhattan', '/', '#facts .fact']];
 
 for (const [name, path, ready] of PAGES) {
   test(`${name}: no accessibility violations`, async ({ page }) => {
