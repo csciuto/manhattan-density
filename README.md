@@ -1,8 +1,8 @@
-# __TITLE__
+# Manhattan Tract Density
 
-**Live:** [corey.sciu.to/__NAME__](https://corey.sciu.to/__NAME__/)
+**Live:** [corey.sciu.to/manhattan-density](https://corey.sciu.to/manhattan-density/)
 
-__DESCRIPTION__
+Manhattan's census tracts drawn in 3D by density in 2010 and 2020, updating Angel and Lamson-Hall's 1910/2010 plate.
 
 ## Development
 

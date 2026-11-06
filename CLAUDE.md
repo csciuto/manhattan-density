@@ -1,6 +1,6 @@
-# __TITLE__
+# Manhattan Tract Density
 
-__DESCRIPTION__
+Manhattan's census tracts drawn in 3D by density in 2010 and 2020, updating Angel and Lamson-Hall's 1910/2010 plate.
 
 Follow the app standards in [csciuto/app-template STANDARDS.md](https://github.com/csciuto/app-template/blob/main/STANDARDS.md).
 In short: tests gate the deploy; logic in plain, unit-tested files; browser tests at desktop and phone size with
@@ -9,7 +9,7 @@ tests pass.
 
 ## This app
 
-- Lives at https://corey.sciu.to/__NAME__/. `.github/workflows/deploy.yml` tests, stamps the version and
+- Lives at https://corey.sciu.to/manhattan-density/. `.github/workflows/deploy.yml` tests, stamps the version and
   publishes on every push to `main`.
 - Keep `index.html` at the repo root. If the app moves (e.g. into `docs/`), update the repo's homepage URL, the
   `og:` tags, the workflow's version-stamp file list, and `APP`/`PREVIEW` in `e2e/smoke.spec.js`.

@@ -1,1 +1,1 @@
-// Entry point for __TITLE__.
+// Entry point for Manhattan Tract Density.
