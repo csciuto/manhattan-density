@@ -7,7 +7,7 @@ var CH = [[-1e9, -50, '--lossS', 'Down 50+'], [-50, -10, '--lossW', 'Down 10–5
 
 function band(d) { return BANDS.findIndex(function (b) { return d >= b[0] && d < b[1]; }); }
 
-// adds d10, d20 (persons per hectare), dd (change), cx/cy (shape centre) and h (drawn height) to each tract
+// adds d10, d20 (persons per hectare), dd (change), cx/cy (shape center) and h (drawn height) to each tract
 function enrich(T) {
   T.forEach(function (t) {
     t.d10 = t.ha > 0 ? t.p10 / t.ha : 0; t.d20 = t.ha > 0 ? t.p20 / t.ha : 0; t.dd = t.d20 - t.d10;
