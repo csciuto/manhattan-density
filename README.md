@@ -2,6 +2,8 @@
 
 **Live:** [corey.sciu.to/manhattan-density](https://corey.sciu.to/manhattan-density/)
 
+Built with [Claude Code](https://claude.com/claude-code).
+
 Manhattan's census tracts drawn in 3D by density in 2010 and 2020, updating Angel and Lamson-Hall's 1910/2010 plate.
 
 ## Data and checks
