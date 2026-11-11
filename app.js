@@ -87,22 +87,37 @@ function setMode(m){
 document.getElementById('v10').onclick=()=>setMode('10');
 document.getElementById('v20').onclick=()=>setMode('20');
 document.getElementById('vch').onclick=()=>setMode('ch');
-// drag to rotate
-let dragX=null;
-cv.addEventListener('pointerdown',e=>{if(e.pointerType==='touch')return;dragX=e.clientX;cv.classList.add('drag');cv.setPointerCapture(e.pointerId);});
-cv.addEventListener('pointerup',()=>{dragX=null;cv.classList.remove('drag')});
+// Turning and reading it. A drag sideways turns the island (mouse or finger; up-and-down on a phone still scrolls
+// the page), the two Turn buttons do the same for a keyboard, and a tract's numbers show on hover or on a tap.
 const tip=document.getElementById('tip');
+const turn=d=>{az+=d;fit();draw();tip.hidden=true;};
+document.getElementById('turnL').onclick=()=>turn(-Math.PI/12);
+document.getElementById('turnR').onclick=()=>turn(Math.PI/12);
 function inside(pt,poly){let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const[a,b]=poly[i],[c2,d]=poly[j];if((b>pt[1])!==(d>pt[1])&&pt[0]<(c2-a)*(pt[1]-b)/(d-b)+a)c=!c;}return c;}
-cv.addEventListener('pointermove',e=>{
+function showTip(e){
   const r=cv.getBoundingClientRect(),pt=[e.clientX-r.left,e.clientY-r.top];
-  if(dragX!==null){az+=(e.clientX-dragX)*0.006;dragX=e.clientX;fit();draw();tip.hidden=true;return;}
   let hit=null;for(let i=tops.length-1;i>=0;i--){if(inside(pt,tops[i].poly)){hit=tops[i].t;break;}}
   if(!hit){tip.hidden=true;return;}
   tip.innerHTML=`<b>Tract ${hit.id}</b><span>${hit.nta}</span><table><tr><td></td><td>2010</td><td>2020</td></tr><tr><td>Pop</td><td>${fmt(hit.p10)}</td><td>${fmt(hit.p20)}</td></tr><tr><td>p/ha</td><td>${fmt(hit.d10)}</td><td>${fmt(hit.d20)}</td></tr></table>`;
-  tip.hidden=false; const sr=stage.getBoundingClientRect();
-  let lx=e.clientX-sr.left+14, ly=e.clientY-sr.top+14; if(lx+250>sr.width) lx-=270; tip.style.left=lx+'px'; tip.style.top=ly+'px';
+  tip.hidden=false; const sr=stage.getBoundingClientRect(),tw=tip.offsetWidth,th=tip.offsetHeight;
+  let lx=e.clientX-sr.left+14, ly=e.clientY-sr.top+14;
+  if(lx+tw>sr.width-4) lx=Math.max(4,e.clientX-sr.left-tw-14);     // keep it on the stage, on a narrow screen too
+  if(ly+th>sr.height-4) ly=Math.max(4,e.clientY-sr.top-th-14);
+  tip.style.left=lx+'px'; tip.style.top=ly+'px';
+}
+let drag=null;   // {x: last position, x0: where it began, moved}
+cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,x0:e.clientX,moved:false};try{cv.setPointerCapture(e.pointerId);}catch(_){}});
+cv.addEventListener('pointermove',e=>{
+  if(drag){
+    if(!drag.moved&&Math.abs(e.clientX-drag.x0)<5) return;       // not a drag yet: it may be a tap
+    drag.moved=true; cv.classList.add('drag');
+    az+=(e.clientX-drag.x)*0.006; drag.x=e.clientX; fit(); draw(); tip.hidden=true; return;
+  }
+  if(e.pointerType==='mouse') showTip(e);
 });
-cv.addEventListener('pointerleave',()=>tip.hidden=true);
+cv.addEventListener('pointerup',e=>{const tap=drag&&!drag.moved; drag=null; cv.classList.remove('drag'); if(tap) showTip(e);});
+cv.addEventListener('pointercancel',()=>{drag=null;cv.classList.remove('drag');});   // the page took the gesture to scroll
+cv.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'&&!drag) tip.hidden=true;});
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{readColors();draw();});
 new MutationObserver(()=>{readColors();draw();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 readColors(); legend(); new ResizeObserver(size).observe(stage); size();

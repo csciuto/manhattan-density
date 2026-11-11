@@ -83,7 +83,11 @@ canvas.drag{cursor:grabbing}
       <button id="v20" aria-pressed="true">2020</button>
       <button id="vch" aria-pressed="false">Change</button>
     </div>
-    <span class="hint">Drag to turn the island · hover a tract for numbers</span>
+    <div class="seg" role="group" aria-label="Turn the island">
+      <button id="turnL" aria-label="Turn left" title="Turn left">↺</button>
+      <button id="turnR" aria-label="Turn right" title="Turn right">↻</button>
+    </div>
+    <span class="hint">Drag to turn · hover or tap a tract</span>
   </div>
   <div class="stage" id="stage">
     <canvas id="cv" aria-label="Oblique 3D map of Manhattan census tracts, extruded by residential density"></canvas>
